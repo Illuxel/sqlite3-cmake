@@ -39,29 +39,15 @@ target_link_libraries(SqLite3
     OpenSSL::SSL
 )
 
-install(TARGETS SqLite3
-    EXPORT sqlite3-targets
+install(FILES ${SQLITE3_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(TARGETS SqLite3 EXPORT sqlite3-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(FILES ${SQLITE3_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-install(EXPORT sqlite3-targets
-    FILE sqlite3-targets.cmake
+install(EXPORT sqlite3-targets FILE sqlite3-targets.cmake
     NAMESPACE SqLite3::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
-)
-
-install(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/sqlite3-config.cmake
-    DESTINATION 
-        ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
-)
-
-export(EXPORT sqlite3-targets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/cmake/sqlite3-targets.cmake
-    NAMESPACE SqLite3::
 )
