@@ -15,8 +15,6 @@ if (NOT OPENSSL_FOUND)
 #   find_package(ZLIB REQUIRED)
 endif()
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 set(SQLITE3_INCLUDE
     sqlite3/sqlite3.h
     sqlite3/sqlite3ext.h
@@ -39,4 +37,31 @@ PUBLIC
 target_link_libraries(SqLite3
     OpenSSL::Crypto
     OpenSSL::SSL
+)
+
+install(TARGETS SqLite3
+    EXPORT sqlite3-targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(FILES ${SQLITE3_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(EXPORT sqlite3-targets
+    FILE sqlite3-targets.cmake
+    NAMESPACE SqLite3::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
+)
+
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/sqlite3-config.cmake
+    DESTINATION 
+        ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
+)
+
+export(EXPORT sqlite3-targets
+    FILE ${CMAKE_CURRENT_BINARY_DIR}/cmake/sqlite3-targets.cmake
+    NAMESPACE SqLite3::
 )
