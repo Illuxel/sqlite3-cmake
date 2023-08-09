@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
 project(SqLite3Cmake C)
 
@@ -14,6 +14,8 @@ if (NOT OPENSSL_FOUND)
     find_package(OpenSSL REQUIRED)
 #   find_package(ZLIB REQUIRED)
 endif()
+
+set(SQLITE3_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/sqlite3)
 
 set(SQLITE3_INCLUDE
     sqlite3/sqlite3.h
@@ -39,15 +41,24 @@ target_link_libraries(SqLite3
     OpenSSL::SSL
 )
 
-install(FILES ${SQLITE3_INCLUDE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-install(TARGETS SqLite3 EXPORT sqlite3-targets
+install(
+    TARGETS SqLite3 EXPORT sqlite3-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-
-install(EXPORT sqlite3-targets FILE sqlite3-targets.cmake
+install(
+    EXPORT sqlite3-targets FILE sqlite3-targets.cmake
     NAMESPACE SqLite3::
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
+)
+
+install(
+    FILES cmake/sqlite3-config.cmake 
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
+)
+
+install(
+    FILES ${SQLITE3_INCLUDE} 
+    DESTINATION ${SQLITE3_INSTALL_INCLUDEDIR}
 )
