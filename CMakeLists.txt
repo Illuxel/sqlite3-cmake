@@ -10,7 +10,7 @@ if (NOT DEFINED CMAKE_INSTALL_LIBDIR)
     set(CMAKE_INSTALL_LIBDIR "lib")
 endif()
 
-if (NOT OPENSSL_FOUND)
+if (NOT TARGET OPENSSL)
     find_package(OpenSSL REQUIRED)
 #   find_package(ZLIB REQUIRED)
 endif()
@@ -48,17 +48,18 @@ install(
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 install(
-    EXPORT sqlite3-targets FILE sqlite3-targets.cmake
+    EXPORT sqlite3-targets 
+    FILE sqlite3-targets.cmake
     NAMESPACE SqLite3::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
-)
-
-install(
-    FILES cmake/sqlite3-config.cmake 
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
 )
 
 install(
     FILES ${SQLITE3_INCLUDE} 
     DESTINATION ${SQLITE3_INSTALL_INCLUDEDIR}
+)
+
+install(
+    FILES cmake/sqlite3-config.cmake 
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
 )
