@@ -33,25 +33,31 @@ set(SQLITE3_SOURCE
     sqlite3/sqlite3.c
 )
 
-add_library(SQLite3 STATIC ${SQLITE3_SOURCE})
-add_library(SQLite3::SQLite3 ALIAS SQLite3)
+add_library(SQLite STATIC ${SQLITE3_SOURCE})
+add_library(SQLite::SQLite ALIAS SQLite)
 
-target_include_directories(SQLite3
+target_include_directories(SQLite
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_link_libraries(SQLite3
+target_link_libraries(SQLite
     OpenSSL::Crypto
     OpenSSL::SSL
 )
 
 install(
-    TARGETS SQLite3 EXPORT sqlite3-targets
+    TARGETS SQLite EXPORT sqlite3-targets
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
     INCLUDES  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+install(
+    EXPORT sqlite3-targets 
+    FILE sqlite3-targets.cmake
+    NAMESPACE SQLite::
+    DESTINATION ${SQLITE3_INSTALL_LIBDIR}
 )
 
 install(FILES ${SQLITE3_INCLUDE} DESTINATION ${SQLITE3_INCLUDEDIR})
@@ -74,11 +80,4 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/sqlite3-config.cmake 
     ${CMAKE_CURRENT_BINARY_DIR}/cmake/sqlite3-config-version.cmake 
 DESTINATION ${SQLITE3_INSTALL_LIBDIR}
-)
-
-install(
-    EXPORT sqlite3-targets 
-    FILE sqlite3-targets.cmake
-    NAMESPACE SQLite3::
-    DESTINATION ${SQLITE3_INSTALL_LIBDIR}
 )
