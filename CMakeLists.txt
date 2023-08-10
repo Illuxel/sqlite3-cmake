@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.18 FATAL_ERROR)
 
-project(SqLite3Cmake C)
+project(SqLite3Cmake 
+    VERSION 3.42.0 
+    LANGUAGES C
+)
 
 if (NOT DEFINED CMAKE_INSTALL_INCLUDEDIR)
     set(CMAKE_INSTALL_INCLUDEDIR "include")
