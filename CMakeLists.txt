@@ -15,10 +15,12 @@ endif()
 
 if (NOT TARGET OPENSSL)
     find_package(OpenSSL REQUIRED)
-#   find_package(ZLIB REQUIRED)
 endif()
 
-set(SQLITE3_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/sqlite3)
+set(SQLITE3_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/sqlite3)
+
+set(SQLITE3_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/cmake/sqlite3)
+set(SQLITE3_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3)
 
 set(SQLITE3_INCLUDE
     sqlite3/sqlite3.h
@@ -31,38 +33,52 @@ set(SQLITE3_SOURCE
     sqlite3/sqlite3.c
 )
 
-add_library(SqLite3 STATIC ${SQLITE3_SOURCE})
-add_library(SqLite3::SqLite3 ALIAS SqLite3)
+add_library(SQLite3 STATIC ${SQLITE3_SOURCE})
+add_library(SQLite3::SQLite3 ALIAS SQLite3)
 
-target_include_directories(SqLite3
+target_include_directories(SQLite3
 PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-target_link_libraries(SqLite3
+target_link_libraries(SQLite3
     OpenSSL::Crypto
     OpenSSL::SSL
 )
 
 install(
-    TARGETS SqLite3 EXPORT sqlite3-targets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    TARGETS SQLite3 EXPORT sqlite3-targets
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+install(FILES ${SQLITE3_INCLUDE} DESTINATION ${SQLITE3_INCLUDEDIR})
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sqlite3-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/sqlite3-config.cmake
+    INSTALL_DESTINATION ${SQLITE3_INSTALL_LIBDIR}
+    PATH_VARS
+        CMAKE_INSTALL_LIBDIR
+        CMAKE_INSTALL_INCLUDEDIR
+)
+write_basic_package_version_file(cmake/sqlite3-config-version.cmake
+    VERSION ${SqLite3Cmake_VERSION}
+    COMPATIBILITY ExactVersion
+)
+
+install(FILES 
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/sqlite3-config.cmake 
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake/sqlite3-config-version.cmake 
+DESTINATION ${SQLITE3_INSTALL_LIBDIR}
+)
+
 install(
     EXPORT sqlite3-targets 
     FILE sqlite3-targets.cmake
-    NAMESPACE SqLite3::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
-)
-
-install(
-    FILES ${SQLITE3_INCLUDE} 
-    DESTINATION ${SQLITE3_INSTALL_INCLUDEDIR}
-)
-
-install(
-    FILES cmake/sqlite3-config.cmake 
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sqlite3
+    NAMESPACE SQLite3::
+    DESTINATION ${SQLITE3_INSTALL_LIBDIR}
 )
